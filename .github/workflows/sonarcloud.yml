@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2.2.0
@@ -26,3 +26,4 @@ jobs:
           args: >
             -Dsonar.projectKey=HaiDTHE186294_TextGameSWD
             -Dsonar.organization=haidthe186294
+            -X
