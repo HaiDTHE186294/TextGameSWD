@@ -18,6 +18,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'  # hoặc version bạn đang dùng
+          distribution: 'temurin'
+
+      - name: Compile Java source files
+        run: javac -d build $(find src -name "*.java")
+
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2.2.0
         env:
@@ -26,4 +35,5 @@ jobs:
           args: >
             -Dsonar.projectKey=HaiDTHE186294_TextGameSWD
             -Dsonar.organization=haidthe186294
+            -Dsonar.java.binaries=build
             -X
