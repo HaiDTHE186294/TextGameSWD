@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 public class HelloFX extends Application {
     @Override
     public void start(Stage stage) {
-        Label label = new Label("Hello, JavaFX!");
+        Label label = new Label("Hello, JavaFX 2!");
         Scene scene = new Scene(label, 320, 200);
         stage.setTitle("JavaFX Test");
         stage.setScene(scene);
