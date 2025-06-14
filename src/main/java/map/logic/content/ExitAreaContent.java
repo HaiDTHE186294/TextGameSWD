@@ -1,6 +1,6 @@
 package map.logic.content;
 
-import map.logic.CellContent;
+import map.logic.content.CellContent;
 import map.logic.PlayerPosition;
 import map.logic.GMap;
 
@@ -13,12 +13,16 @@ public class ExitAreaContent implements CellContent {
         this.gameMap = gameMap;
     }
 
+    @Override
     public void setPlayerPosition(PlayerPosition playerPosition) {
         this.playerPosition = playerPosition;
+        // Reset isShowingMap when player position is set, meaning they've entered a room.
+        this.isShowingMap = false;
     }
 
     @Override
     public void onEnter() {
+        System.out.println("ExitAreaContent: onEnter called. isShowingMap BEFORE toggle: " + isShowingMap); // Debug log
         if (gameMap != null) {
             // Toggle map view state
             isShowingMap = !isShowingMap;

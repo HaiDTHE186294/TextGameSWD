@@ -22,6 +22,11 @@ public class PlayerPosition {
         if (gameMap != null) {
             gameMap.notifyPlayerMoved(areaId, roomId, cell.getRow(), cell.getCol());
         }
+
+        // Set player position in the content of the new cell
+        if (cell.getContent() != null && cell.getContent() instanceof map.logic.content.CellContent) {
+            ((map.logic.content.CellContent) cell.getContent()).setPlayerPosition(this);
+        }
     }
 
     public Cell getCell() {

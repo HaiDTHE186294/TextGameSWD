@@ -32,8 +32,8 @@ public class MapTestingController extends GameApplication implements IMapObserve
         this.mapObservers = new ArrayList<>();
         this.uiObservers = new ArrayList<>();
         this.playerPosition = new PlayerPosition("TestArea", "room1", null, gameMap);
+        gameMap.addObserver(this);
         addMapObserver(this);
-        addUIObserver(this);
     }
 
     @Override
@@ -49,9 +49,18 @@ public class MapTestingController extends GameApplication implements IMapObserve
         mapUI = new MapUI();
         currentAreaUI = new AreaUI();
         mapUI.setCurrentArea(currentAreaUI);
-        FXGL.getGameWorld().addUINode(mapUI.getNode());
+        FXGL.getGameScene().addUINode(mapUI.getNode());
         
+        // MapTestingController observes MapUI for movement requests from the UI
+        mapUI.addObserver(this);
+        
+        // MapUI observes MapTestingController for player position updates
+        this.addUIObserver(mapUI);
+
         initializeTestMap();
+        
+        // Set the gameMap for AreaMapUI AFTER areas have been initialized
+        mapUI.getAreaMapUI().setGameMap(gameMap);
     }
 
     public void initializeTestMap() {
@@ -60,24 +69,52 @@ public class MapTestingController extends GameApplication implements IMapObserve
         Room testRoom = new Room("room1", 10, 15); // 10 rows, 15 columns
         
         // Add some walls
-        for (int i = 0; i < 10; i++) {
-            testRoom.getCell(0, i).setWalkable(false);
-            testRoom.getCell(9, i).setWalkable(false);
-        }
         for (int i = 0; i < 15; i++) {
-            testRoom.getCell(i, 0).setWalkable(false);
-            testRoom.getCell(i, 14).setWalkable(false);
+            testRoom.getCell(0, i).setWalkable(false);  // Top wall
+            testRoom.getCell(9, i).setWalkable(false);  // Bottom wall
+        }
+        for (int i = 0; i < 10; i++) {
+            testRoom.getCell(i, 0).setWalkable(false);  // Left wall
+            testRoom.getCell(i, 14).setWalkable(false); // Right wall
         }
         
         // Add an exit
         Cell exitCell = testRoom.getCell(5, 13);
-        exitCell.setContent((CellContent) new ExitAreaContent(gameMap));
+        exitCell.setContent(new ExitAreaContent(gameMap));
         
         testArea.addRoom(testRoom);
         gameMap.addArea(testArea);
         
+        // Set a walkable spawn cell for TestArea
+        testArea.setSpawnCell(testRoom.getCell(1, 1));
+
+        // Add a second test area
+        Area areaTwo = new Area("AreaTwo", gameMap);
+        Room roomTwo = new Room("roomA", 8, 12);
+        areaTwo.addRoom(roomTwo);
+        gameMap.addArea(areaTwo);
+
+        // Add an exit to AreaTwo
+        Cell exitCellTwo = roomTwo.getCell(1, 1); // Assuming (1,1) is walkable
+        exitCellTwo.setContent(new ExitAreaContent(gameMap));
+
+        // Add a third test area
+        Area areaThree = new Area("AreaThree", gameMap);
+        Room roomThree = new Room("roomX", 7, 10);
+        areaThree.addRoom(roomThree);
+        gameMap.addArea(areaThree);
+
+        // Add an exit to AreaThree
+        Cell exitCellThree = roomThree.getCell(1, 1); // Assuming (1,1) is walkable
+        exitCellThree.setContent(new ExitAreaContent(gameMap));
+        
         // Set initial player position
         playerPosition = new PlayerPosition("TestArea", "room1", testRoom.getCell(1, 1), gameMap);
+        
+        // Notify UI about initial player position
+        for (IUIObserver observer : uiObservers) {
+            observer.onPlayerPositionChanged(new Point2D(playerPosition.getCell().getCol(), playerPosition.getCell().getRow()));
+        }
         
         // Show the initial room
         currentAreaUI.showRoom(testRoom);
@@ -88,35 +125,34 @@ public class MapTestingController extends GameApplication implements IMapObserve
 
     @Override
     protected void initInput() {
-        Input input = FXGL.getInput();
-        
-        input.addAction(new UserAction("Move Up") {
-            @Override
-            protected void onActionBegin() {
-                movePlayer(0, -1);
-            }
-        }, KeyCode.W);
-        
-        input.addAction(new UserAction("Move Down") {
-            @Override
-            protected void onActionBegin() {
-                movePlayer(0, 1);
-            }
-        }, KeyCode.S);
-        
-        input.addAction(new UserAction("Move Left") {
-            @Override
-            protected void onActionBegin() {
-                movePlayer(-1, 0);
-            }
-        }, KeyCode.A);
-        
-        input.addAction(new UserAction("Move Right") {
-            @Override
-            protected void onActionBegin() {
-                movePlayer(1, 0);
-            }
-        }, KeyCode.D);
+        // Input is now handled by MapEventHandler through the observer pattern
+        // FXGL.getInput().addAction(new UserAction("Move Up") {
+        //     @Override
+        //     protected void onActionBegin() {
+        //         movePlayer(0, -1);
+        //     }
+        // }, KeyCode.W);
+        // 
+        // FXGL.getInput().addAction(new UserAction("Move Down") {
+        //     @Override
+        //     protected void onActionBegin() {
+        //         movePlayer(0, 1);
+        //     }
+        // }, KeyCode.S);
+        // 
+        // FXGL.getInput().addAction(new UserAction("Move Left") {
+        //     @Override
+        //     protected void onActionBegin() {
+        //         movePlayer(-1, 0);
+        //     }
+        // }, KeyCode.A);
+        // 
+        // FXGL.getInput().addAction(new UserAction("Move Right") {
+        //     @Override
+        //     protected void onActionBegin() {
+        //         movePlayer(1, 0);
+        //     }
+        // }, KeyCode.D);
     }
 
     public void movePlayer(int dx, int dy) {
@@ -211,13 +247,30 @@ public class MapTestingController extends GameApplication implements IMapObserve
 
     @Override
     public void onAreaTransitionRequested(String targetAreaId) {
+        System.out.println("MapTestingController: Area transition requested to: " + targetAreaId); // Debug log
         if (playerPosition != null) {
             var targetArea = gameMap.getArea(targetAreaId);
             if (targetArea != null) {
-                var firstRoom = targetArea.getAllRooms().iterator().next();
-                var startCell = firstRoom.getCell(0, 0);
-                playerPosition.moveTo(targetAreaId, firstRoom.getId(), startCell);
-                currentAreaUI.showRoom(firstRoom);
+                Cell startCell;
+                Room targetRoom;
+
+                // Prioritize spawn cell if set for the area
+                if (targetArea.getSpawnCell() != null) {
+                    startCell = targetArea.getSpawnCell();
+                    targetRoom = startCell.getRoom();
+                } else {
+                    // Fallback to the first room's (0,0) if no spawn cell is set
+                    targetRoom = targetArea.getAllRooms().iterator().next();
+                    startCell = targetRoom.getCell(0, 0);
+                }
+
+                if (targetRoom != null && startCell != null) {
+                    playerPosition.moveTo(targetAreaId, targetRoom.getId(), startCell);
+                    currentAreaUI.showRoom(targetRoom);
+
+                    // Hide the area map and show the room view
+                    mapUI.hideAreaSelection();
+                }
             }
         }
     }
@@ -273,6 +326,7 @@ public class MapTestingController extends GameApplication implements IMapObserve
 
     @Override
     public void onAreaSelected(String areaId) {
+        System.out.println("MapTestingController: Area selected received: " + areaId);
         onAreaTransitionRequested(areaId);
     }
 
@@ -317,6 +371,11 @@ public class MapTestingController extends GameApplication implements IMapObserve
         if (currentAreaUI != null) {
             currentAreaUI.updateElement(elementId, newValue);
         }
+    }
+
+    @Override
+    public void onMovementRequested(int dx, int dy) {
+        movePlayer(dx, dy);
     }
 
     public GMap getGameMap() {

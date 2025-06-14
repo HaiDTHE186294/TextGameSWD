@@ -9,6 +9,9 @@ public interface IUIObserver {
     // Player position updates
     void onPlayerPositionChanged(Point2D newPosition);
     
+    // Player movement
+    void onMovementRequested(int dx, int dy);
+    
     // Map element updates
     void onMapElementChanged(int row, int col, String elementType);
     

@@ -11,18 +11,21 @@ import map.observer.IUIObserver;
 
 public class MapEventHandler {
     private final StackPane root;
-    private final List<IUIObserver> observers;
+    private final MapUI mapUI;
     private VBox areaSelectionView;
     private VBox roomTransitionView;
     private String selectedAreaId;
 
-    public MapEventHandler(StackPane root) {
+    public MapEventHandler(StackPane root, MapUI mapUI) {
         this.root = root;
-        this.observers = new ArrayList<>();
+        this.mapUI = mapUI;
         initializeViews();
     }
 
     private void initializeViews() {
+        // Make root focusable
+        root.setFocusTraversable(true);
+        
         // Initialize area selection view
         areaSelectionView = new VBox(10);
         areaSelectionView.setVisible(false);
@@ -36,14 +39,45 @@ public class MapEventHandler {
         // Add views to root
         root.getChildren().addAll(areaSelectionView, roomTransitionView);
         
-        // Add key event handler for Enter key
+        // Add key event handler for movement and Enter key
         root.setOnKeyPressed(this::handleKeyPress);
+        
+        // Request focus when the scene is shown
+        root.setOnMouseClicked(e -> root.requestFocus());
+        
+        // Request initial focus
+        root.requestFocus();
     }
 
     private void handleKeyPress(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER && areaSelectionView.isVisible() && selectedAreaId != null) {
-            notifyAreaSelected(selectedAreaId);
+        // System.out.println("Key pressed: " + event.getCode()); // Debug log
+        
+        if (areaSelectionView.isVisible()) {
+            if (event.getCode() == KeyCode.ENTER && selectedAreaId != null) {
+                notifyAreaSelected(selectedAreaId);
+            }
+            return;
         }
+
+        switch (event.getCode()) {
+            case W:
+                notifyMovement(0, -1);
+                break;
+            case S:
+                notifyMovement(0, 1);
+                break;
+            case A:
+                notifyMovement(-1, 0);
+                break;
+            case D:
+                notifyMovement(1, 0);
+                break;
+        }
+    }
+
+    private void notifyMovement(int dx, int dy) {
+        // System.out.println("Movement requested: dx=" + dx + ", dy=" + dy); // Debug log
+        mapUI.onMovementRequested(dx, dy);
     }
 
     public void showAreaSelection() {
@@ -80,24 +114,12 @@ public class MapEventHandler {
         }
     }
 
-    public void addObserver(IUIObserver observer) {
-        observers.add(observer);
-    }
-
-    public void removeObserver(IUIObserver observer) {
-        observers.remove(observer);
-    }
-
     private void notifyAreaSelected(String areaId) {
-        for (IUIObserver observer : observers) {
-            observer.onAreaSelected(areaId);
-        }
+        mapUI.onAreaSelected(areaId);
     }
 
     private void notifyRoomSelected(String areaId, String roomId) {
-        for (IUIObserver observer : observers) {
-            observer.onRoomSelected(areaId, roomId);
-        }
+        mapUI.onRoomSelected(areaId, roomId);
     }
 
     public void handleUIStateChange(String state) {

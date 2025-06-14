@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapUI implements IUIObserver {
-    private final GridPane areaGrid;
     private final StackPane root;
     private final VBox areaSelectionView;
     private final List<IUIObserver> uiObservers;
@@ -26,21 +25,28 @@ public class MapUI implements IUIObserver {
     private static final Color WALL_COLOR = Color.GRAY;
     private static final Color PLAYER_COLOR = Color.BLUE;
     private static final Color EXIT_COLOR = Color.RED;
+    private final MapEventHandler eventHandler;
+    private final AreaMapUI areaMapUI;
 
     public MapUI() {
         root = new StackPane();
-        areaGrid = new GridPane();
-        areaGrid.setHgap(2);
-        areaGrid.setVgap(2);
         uiObservers = new ArrayList<>();
         
-        // Initialize area selection view
+        // Initialize area selection view (old map view) - no longer added to root
         areaSelectionView = new VBox(10);
         areaSelectionView.setAlignment(Pos.CENTER);
         areaSelectionView.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20;");
         areaSelectionView.setVisible(false);
         
-        root.getChildren().addAll(areaGrid, areaSelectionView);
+        // Initialize new AreaMapUI (graphical map view)
+        areaMapUI = new AreaMapUI(uiObservers);
+        areaMapUI.setVisible(false);
+
+        // Only add areaMapUI to root initially. currentAreaUI.getNode() will be added/removed dynamically.
+        root.getChildren().add(areaMapUI);
+        
+        // Initialize event handler
+        eventHandler = new MapEventHandler(root, this);
     }
 
     public void addObserver(IUIObserver observer) {
@@ -53,13 +59,25 @@ public class MapUI implements IUIObserver {
 
     public void showAreaSelection() {
         isMapViewActive = true;
-        areaGrid.getChildren().clear();
-        areaSelectionView.setVisible(true);
+        areaSelectionView.setVisible(false); // Hide the old area selection buttons
+        areaMapUI.setVisible(true); // Show the new graphical map
+        
+        // Hide the current room view if it's active
+        if (currentAreaUI != null) {
+            boolean removed = root.getChildren().remove(currentAreaUI.getNode());
+            System.out.println("MapUI: Removed currentAreaUI.getNode() from root: " + removed); // Debug log
+        }
     }
 
     public void hideAreaSelection() {
         isMapViewActive = false;
+        areaMapUI.setVisible(false); // Hide the new graphical map
         areaSelectionView.setVisible(false);
+        
+        // Re-add the current room view if it was hidden
+        if (currentAreaUI != null && !root.getChildren().contains(currentAreaUI.getNode())) {
+            root.getChildren().add(currentAreaUI.getNode());
+        }
     }
 
     public void addAreaButton(String areaId, String areaName) {
@@ -74,31 +92,16 @@ public class MapUI implements IUIObserver {
         areaSelectionView.getChildren().clear();
     }
 
-    public void updateMapCell(int row, int col, boolean isWall, boolean isPlayer, boolean isExit) {
-        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
-        if (isWall) {
-            cell.setFill(WALL_COLOR);
-        } else if (isPlayer) {
-            cell.setFill(PLAYER_COLOR);
-        } else if (isExit) {
-            cell.setFill(EXIT_COLOR);
-        } else {
-            cell.setFill(Color.WHITE);
-            cell.setStroke(Color.LIGHTGRAY);
-        }
-        areaGrid.add(cell, col, row);
-    }
-
-    public void clearMap() {
-        areaGrid.getChildren().clear();
-    }
-
     public boolean isMapViewActive() {
         return isMapViewActive;
     }
 
     public StackPane getNode() {
         return root;
+    }
+
+    public AreaMapUI getAreaMapUI() {
+        return areaMapUI;
     }
 
     // IUIObserver implementation
@@ -113,8 +116,11 @@ public class MapUI implements IUIObserver {
 
     @Override
     public void onPlayerPositionChanged(Point2D newPosition) {
+        // System.out.println("MapUI: Player position changed to " + newPosition);
         if (currentAreaUI != null) {
             currentAreaUI.updatePlayerPosition(newPosition);
+            // root.getChildren().remove(currentAreaUI.getNode()); // Handled by show/hideAreaSelection
+            // root.getChildren().add(currentAreaUI.getNode());   // Handled by show/hideAreaSelection
         }
     }
 
@@ -177,12 +183,23 @@ public class MapUI implements IUIObserver {
         }
     }
 
+    @Override
+    public void onMovementRequested(int dx, int dy) {
+        // Forward movement request to observers
+        for (IUIObserver observer : uiObservers) {
+            observer.onMovementRequested(dx, dy);
+        }
+    }
+
     public void setCurrentArea(AreaUI areaUI) {
         if (currentAreaUI != null) {
             root.getChildren().remove(currentAreaUI.getNode());
         }
         currentAreaUI = areaUI;
-        root.getChildren().add(areaUI.getNode());
+        // Only add if not already in children (might be re-added by hideAreaSelection)
+        if (!root.getChildren().contains(areaUI.getNode())) {
+            root.getChildren().add(areaUI.getNode());
+        }
     }
 
     private void notifyAreaSelected(String areaId) {

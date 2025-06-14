@@ -17,7 +17,7 @@ javafx {
 }
 
 application {
-    mainClass.set("item.example.InventoryUIExample")
+    mainClass.set("map.controller.MapTestingController")
 }
 
 dependencies {
@@ -27,8 +27,7 @@ dependencies {
     implementation("org.openjfx:javafx-graphics:22:win")
     implementation("org.openjfx:javafx-fxml:22:win")
 
-    // FXGL phiên bản ổn định 21.1
-    implementation("com.github.almasb:fxgl:21.1")
+    implementation("com.github.almasb:fxgl:17.2")
 
     // Jackson JSON
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.2")

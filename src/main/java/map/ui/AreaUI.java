@@ -32,6 +32,7 @@ public class AreaUI {
     }
 
     public void updatePlayerPosition(Point2D position) {
+        // System.out.println("AreaUI: Updating player position to: " + position); // Debug log
         this.playerPosition = position;
         renderRoom();
     }
@@ -71,13 +72,14 @@ public class AreaUI {
                 Rectangle cellRect = new Rectangle(CELL_SIZE, CELL_SIZE);
                 
                 boolean isPlayer = playerPosition != null && 
-                                 playerPosition.getX() == col && 
-                                 playerPosition.getY() == row;
+                                 (int)playerPosition.getX() == col && 
+                                 (int)playerPosition.getY() == row;
                 
                 if (!cell.isWalkable()) {
                     cellRect.setFill(WALL_COLOR);
                 } else if (isPlayer) {
                     cellRect.setFill(PLAYER_COLOR);
+                    // System.out.println("AreaUI: Drawing player at row: " + row + ", col: " + col); // Debug log
                 } else if (cell.getContent() != null && cell.getContent().render().equals("E")) {
                     cellRect.setFill(EXIT_COLOR);
                 } else {

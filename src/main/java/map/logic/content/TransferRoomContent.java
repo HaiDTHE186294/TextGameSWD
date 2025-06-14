@@ -1,6 +1,6 @@
 package map.logic.content;
 
-import map.logic.CellContent;
+import map.logic.content.CellContent;
 import map.logic.PlayerPosition;
 
 public class TransferRoomContent implements CellContent {
@@ -17,6 +17,7 @@ public class TransferRoomContent implements CellContent {
         this.targetCol = targetCol;
     }
 
+    @Override
     public void setPlayerPosition(PlayerPosition playerPosition) {
         this.playerPosition = playerPosition;
     }

@@ -3,6 +3,7 @@ package map.controller;
 import map.logic.GMap;
 import map.logic.PlayerPosition;
 import map.logic.Cell;
+import map.logic.Room;
 import map.observer.IMapObserver;
 import map.observer.IUIObserver;
 import javafx.geometry.Point2D;
@@ -132,6 +133,36 @@ public class MapController implements IMapObserver, IUIObserver {
             // Hide area selection view
             for (IUIObserver observer : uiObservers) {
                 observer.onUIStateChanged("HIDE_MAP");
+            }
+        }
+    }
+
+    @Override
+    public void onMovementRequested(int dx, int dy) {
+        if (playerPosition != null) {
+            Room currentRoom = gameMap.getArea(playerPosition.getAreaId())
+                                    .getRoom(playerPosition.getRoomId());
+            
+            Cell currentCell = playerPosition.getCell();
+            int newRow = currentCell.getRow() + dy;
+            int newCol = currentCell.getCol() + dx;
+            
+            if (newRow >= 0 && newRow < currentRoom.getRows() &&
+                newCol >= 0 && newCol < currentRoom.getCols()) {
+                
+                Cell newCell = currentRoom.getCell(newRow, newCol);
+                if (newCell.isWalkable()) {
+                    playerPosition.moveTo(
+                        playerPosition.getAreaId(),
+                        playerPosition.getRoomId(),
+                        newCell
+                    );
+                    
+                    // Check for content interaction
+                    if (newCell.getContent() != null) {
+                        newCell.getContent().onEnter();
+                    }
+                }
             }
         }
     }
