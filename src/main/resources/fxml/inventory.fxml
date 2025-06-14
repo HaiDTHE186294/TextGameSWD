@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="item.ui.InventoryController"
+      spacing="10" padding="10">
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Inventory" style="-fx-font-size: 24px;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="ownerComboBox" promptText="Chọn chủ sở hữu"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Danh sách vật phẩm" style="-fx-font-size: 16px;"/>
+            <ListView fx:id="itemListView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Thông tin chi tiết" style="-fx-font-size: 16px;"/>
+            <VBox fx:id="itemDetailsBox" spacing="5" VBox.vgrow="ALWAYS" padding="10">
+                <Label fx:id="itemNameLabel" style="-fx-font-size: 18px;"/>
+                <Label fx:id="itemDescriptionLabel"/>
+                <Label fx:id="itemValueLabel"/>
+                <Label fx:id="itemQuantityLabel"/>
+                <Label fx:id="itemTypeLabel"/>
+                <Label fx:id="itemStatusLabel"/>
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Sử dụng" onAction="#handleUseItem"/>
+        <Button text="Đóng" onAction="#handleClose"/>
+    </HBox>
+
+</VBox>
