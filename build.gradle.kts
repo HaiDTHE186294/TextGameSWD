@@ -17,8 +17,16 @@ javafx {
 }
 
 application {
-    mainClass.set("org.example.HelloFX")
+    mainClass.set("dialogue.ui.DialogueApp")
 }
+
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.2")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.16.2")
+}
+
+
 
 tasks.test {
     useJUnitPlatform()
