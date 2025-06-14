@@ -1,21 +1,31 @@
 package dialogue.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import game.context.GameContext;
 
 public class DialogueContext {
-    private Map<String, Object> state;
+    private final GameContext gameContext;
 
-    // Constructor mặc định
     public DialogueContext() {
-        this.state = new HashMap<>();
+        this.gameContext = new GameContext();
     }
 
-    // Constructor nhận Map
-    public DialogueContext(Map<String, Object> state) {
-        this.state = new HashMap<>(state);
+    public Object getData(String key) {
+        return gameContext.getData(key);
     }
 
-    public Object get(String key) { return state.get(key); }
-    public void set(String key, Object value) { state.put(key, value); }
+    public void setData(String key, Object value) {
+        gameContext.setData(key, value);
+    }
+
+    public boolean hasData(String key) {
+        return gameContext.hasData(key);
+    }
+
+    public void removeData(String key) {
+        gameContext.removeData(key);
+    }
+
+    public void clear() {
+        gameContext.clear();
+    }
 }
