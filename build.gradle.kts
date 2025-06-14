@@ -17,7 +17,7 @@ javafx {
 }
 
 application {
-    mainClass.set("dialogue.ui.DialogueApp")
+    mainClass.set("item.example.InventoryUIExample")
 }
 
 dependencies {

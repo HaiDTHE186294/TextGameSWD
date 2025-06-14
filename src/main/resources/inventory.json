@@ -1,0 +1,17 @@
+{
+  "inventories" : {
+    "player_1" : {
+      "maxSize" : 20,
+      "items" : {
+        "potion_1" : 8,
+        "key_1" : 1
+      }
+    },
+    "npc_1" : {
+      "maxSize" : 10,
+      "items" : {
+        "potion_1" : 3
+      }
+    }
+  }
+}

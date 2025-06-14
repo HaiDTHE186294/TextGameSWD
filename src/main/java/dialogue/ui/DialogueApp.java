@@ -1,5 +1,6 @@
 package dialogue.ui;
 
+import game.context.GameContext;
 import dialogue.model.DialogueContext;
 import dialogue.model.DialogueModel;
 import dialogue.service.DialogueService;
