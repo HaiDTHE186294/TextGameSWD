@@ -1,14 +1,17 @@
 package dialogue.ui;
 
-import dialogue.logic.AbstractDialogueController;
-import dialogue.logic.DialogueManager;
+import dialogue.controller.DialogueController;
+import dialogue.service.DialogueService;
 
-public class JavaFXDialogueController extends AbstractDialogueController {
-    public JavaFXDialogueController(DialogueManager manager) { super(manager); }
+public class JavaFXDialogueController extends DialogueController {
+    public JavaFXDialogueController(DialogueService service) {
+        super(service);
+    }
 
     @Override
     public void onUserInput(Object input) {
-        if (input instanceof Integer idx) chooseOption(idx);
-        // Xử lý input khác nếu cần
+        if (input instanceof Integer idx) {
+            chooseOption(idx);
+        }
     }
 }

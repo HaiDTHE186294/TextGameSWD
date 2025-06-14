@@ -2,17 +2,19 @@ package dialogue.logic;
 
 import java.util.ArrayList;
 import java.util.List;
+import dialogue.service.DialogueService;
+import dialogue.service.DialogueObserver;
 
 public abstract class AbstractDialogueController {
-    protected DialogueManager manager;
+    protected DialogueService service;
     private final List<DialogueObserver> observers = new ArrayList<>();
 
-    public DialogueManager getManager() {
-        return manager;
+    public DialogueService getService() {
+        return service;
     }
 
-    public AbstractDialogueController(DialogueManager manager) {
-        this.manager = manager;
+    public AbstractDialogueController(DialogueService service) {
+        this.service = service;
     }
 
     public void addObserver(DialogueObserver observer) {
@@ -25,17 +27,17 @@ public abstract class AbstractDialogueController {
 
     protected void notifyObservers() {
         for (DialogueObserver obs : observers) {
-            obs.onDialogueUpdated(manager);
+            obs.onDialogueUpdated(service);
         }
     }
 
     public void start(String dialogueId) {
-        manager.start(dialogueId);
+        service.startDialogue(dialogueId);
         notifyObservers();
     }
 
     public void chooseOption(int index) {
-        manager.chooseOption(index);
+        service.chooseOption(index);
         notifyObservers();
     }
 

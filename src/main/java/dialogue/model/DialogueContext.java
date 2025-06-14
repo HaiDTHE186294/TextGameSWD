@@ -1,4 +1,4 @@
-package dialogue.logic;
+package dialogue.model;
 
 import java.util.HashMap;
 import java.util.Map;

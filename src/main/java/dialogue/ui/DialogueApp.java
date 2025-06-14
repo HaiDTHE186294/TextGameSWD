@@ -1,66 +1,68 @@
 package dialogue.ui;
 
-import dialogue.logic.*;
+import dialogue.model.DialogueContext;
+import dialogue.model.DialogueModel;
+import dialogue.service.DialogueService;
+import dialogue.controller.DialogueController;
+import dialogue.logic.DialogueLoader;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.List;
 
 public class DialogueApp extends Application {
-    private JavaFXDialogueController controller;
+    private DialogueController controller;
+    private DialogueUIService uiService;
     private Label speakerLabel;
     private TextArea dialogueText;
     private VBox optionsBox;
 
-
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        List<Dialogue> dialogues = DialogueLoader.loadFromJson("dialogue_data.json");
-        DialogueContext context = new DialogueContext();
-        DialogueManager manager = new DialogueManager(dialogues, context);
-        controller = new JavaFXDialogueController(manager);
+    public void start(Stage primaryStage) {
+        try {
+            System.out.println("Starting application...");
 
-        speakerLabel = new Label();
-        dialogueText = new TextArea();
-        dialogueText.setEditable(false);
-        dialogueText.setWrapText(true);
-        optionsBox = new VBox(10);
+            System.out.println("Loading dialogues from JSON...");
+            var dialogues = DialogueLoader.loadFromJson("dialogue_data.json");
+            System.out.println("Loaded " + dialogues.size() + " dialogues");
 
-        VBox root = new VBox(10, speakerLabel, dialogueText, optionsBox);
-        Scene scene = new Scene(root, 400, 300);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Hội thoại JavaFX");
-        primaryStage.show();
+            System.out.println("Creating context and service...");
+            var context = new DialogueContext();
+            var service = new DialogueService(dialogues, context);
 
-        controller.addObserver(mgr -> updateUI()); // UI observer
-        controller.start("start");
-        updateUI();
-    }
+            System.out.println("Creating controller...");
+            controller = new JavaFXDialogueController(service);
 
-    private void updateUI() {
-        DialogueManager manager = controller.getManager();
-        Dialogue current = manager.getCurrentDialogue();
-        optionsBox.getChildren().clear();
+            System.out.println("Setting up UI components...");
+            speakerLabel = new Label();
+            dialogueText = new TextArea();
+            dialogueText.setEditable(false);
+            dialogueText.setWrapText(true);
+            optionsBox = new VBox(10);
 
-        if (current == null) {
-            speakerLabel.setText("Kết thúc hội thoại.");
-            dialogueText.setText("");
-            return;
-        }
-        speakerLabel.setText("[" + current.getSpeaker() + "]");
-        dialogueText.setText(current.getText());
+            VBox root = new VBox(10, speakerLabel, dialogueText, optionsBox);
+            Scene scene = new Scene(root, 400, 300);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Hội thoại JavaFX");
+            primaryStage.show();
 
-        List<DialogueOption> options = manager.getCurrentOptions();
-        for (int i = 0; i < options.size(); i++) {
-            DialogueOption opt = options.get(i);
-            Button btn = new Button(opt.getText());
-            int idx = i;
-            btn.setOnAction(e -> controller.onUserInput(idx));
-            optionsBox.getChildren().add(btn);
+            System.out.println("Setting up UI service...");
+            uiService = new DialogueUIService(speakerLabel, dialogueText, optionsBox, controller);
+            service.addObserver(uiService);
+
+            System.out.println("Starting dialogue...");
+            controller.start("start");
+
+            System.out.println("Application started successfully!");
+        } catch (Exception e) {
+            System.err.println("Error starting application:");
+            e.printStackTrace();
+            throw new RuntimeException("Failed to start application", e);
         }
     }
 
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

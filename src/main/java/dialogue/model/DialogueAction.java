@@ -1,4 +1,4 @@
-package dialogue.logic;
+package dialogue.model;
 
 @FunctionalInterface
 public interface DialogueAction {

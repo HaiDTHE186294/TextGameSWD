@@ -1,5 +1,9 @@
 package dialogue.logic;
 
+import dialogue.model.DialogueAction;
+import dialogue.model.DialogueContext;
+import dialogue.model.DialogueOption;
+
 import java.util.*;
 
 public class DialogueManager {
