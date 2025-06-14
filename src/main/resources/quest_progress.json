@@ -1,0 +1,24 @@
+{
+  "player_1" : {
+    "q1" : {
+      "started" : true,
+      "completed" : false,
+      "currentAmount" : 7,
+      "talked" : false
+    },
+    "q2" : {
+      "started" : true,
+      "completed" : true,
+      "currentAmount" : 5,
+      "talked" : false
+    }
+  },
+  "player_2" : {
+    "q1" : {
+      "started" : true,
+      "completed" : false,
+      "currentAmount" : 1,
+      "talked" : false
+    }
+  }
+}

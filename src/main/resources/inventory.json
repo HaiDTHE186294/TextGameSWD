@@ -3,7 +3,7 @@
     "player_1" : {
       "maxSize" : 20,
       "items" : {
-        "potion_1" : 7,
+        "potion_1" : 8,
         "key_1" : 1
       }
     },

@@ -3,7 +3,9 @@ package item.example;
 import item.model.*;
 import item.service.ItemService;
 import item.service.ItemLoader;
+import item.service.InventoryObserver;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -11,11 +13,16 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Map;
+import item.ui.*;
 
-public class InventoryUIExample extends Application {
+/**
+ * InventoryUIExample - JavaFX demo cho inventory, cập nhật tự động theo Observer Pattern.
+ */
+public class InventoryUIExample extends Application implements InventoryUIUpdater {
     private ItemService itemService;
     private ListView<String> inventoryList;
     private Label statusLabel;
+    private InventoryUIObserver observer;
 
     @Override
     public void start(Stage primaryStage) {
@@ -31,6 +38,10 @@ public class InventoryUIExample extends Application {
 
             // Tải và khôi phục trạng thái inventory từ inventory.json
             ItemLoader.loadInventoryData(itemService);
+
+            // Đăng ký observer cho owner "player_1" (có thể sửa thành tên khác nếu muốn)
+            observer = new InventoryUIObserver("player_1", this);
+            itemService.addObserver(observer);
 
             // Tạo giao diện chính
             VBox root = new VBox(10);
@@ -81,6 +92,13 @@ public class InventoryUIExample extends Application {
         }
     }
 
+    // Observer gọi hàm này khi inventory thay đổi
+    @Override
+    public void updateInventoryUI() {
+        // Đảm bảo chạy trên JavaFX Application Thread
+        Platform.runLater(this::updateInventoryList);
+    }
+
     private void updateInventoryList() {
         inventoryList.getItems().clear();
         Map<String, Inventory> inventories = itemService.getAllInventories();
@@ -102,11 +120,11 @@ public class InventoryUIExample extends Application {
 
     private void showRemoveItemDialog() {
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Thêm Item");
+        dialog.setTitle("Xóa Item");
         dialog.setHeaderText("Nhập ID của item muốn xóa");
 
-        ButtonType addButtonType = new ButtonType("Xóa", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+        ButtonType removeButtonType = new ButtonType("Xóa", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(removeButtonType, ButtonType.CANCEL);
 
         TextField itemIdField = new TextField();
         itemIdField.setPromptText("Item ID");
@@ -114,7 +132,7 @@ public class InventoryUIExample extends Application {
         dialog.getDialogPane().setContent(itemIdField);
 
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
+            if (dialogButton == removeButtonType) {
                 return itemIdField.getText();
             }
             return null;
@@ -123,7 +141,7 @@ public class InventoryUIExample extends Application {
         dialog.showAndWait().ifPresent(itemId -> {
             try {
                 itemService.removeItemFromInventory("player_1", itemId, 1);
-                updateInventoryList();
+                // Không cần gọi updateInventoryList(), đã có observer tự động cập nhật
                 showStatus("Đã xóa item thành công");
             } catch (IllegalArgumentException e) {
                 showError("Lỗi: " + e.getMessage());
@@ -154,7 +172,7 @@ public class InventoryUIExample extends Application {
         dialog.showAndWait().ifPresent(itemId -> {
             try {
                 itemService.addItemToInventory("player_1", itemId, 1);
-                updateInventoryList();
+                // Không cần gọi updateInventoryList(), đã có observer tự động cập nhật
                 showStatus("Đã thêm item thành công");
             } catch (IllegalArgumentException e) {
                 showError("Lỗi: " + e.getMessage());
@@ -162,27 +180,6 @@ public class InventoryUIExample extends Application {
         });
     }
 
-    private void removeSelectedItem() {
-        int selectedIndex = inventoryList.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
-            String selectedItem = inventoryList.getItems().get(selectedIndex);
-            if (selectedItem.startsWith("-")) {
-                String itemName = selectedItem.substring(2, selectedItem.indexOf(" (x"));
-                for (Item item : itemService.getAllItems()) {
-                    if (item.getName().equals(itemName)) {
-                        try {
-                            itemService.removeItemFromInventory("player_1", item.getId(), 1);
-                            updateInventoryList();
-                            showStatus("Đã xóa item thành công");
-                        } catch (IllegalArgumentException e) {
-                            showError("Lỗi: " + e.getMessage());
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     private void showStatus(String message) {
         statusLabel.setText(message);
@@ -192,6 +189,14 @@ public class InventoryUIExample extends Application {
     private void showError(String message) {
         statusLabel.setText(message);
         statusLabel.setStyle("-fx-text-fill: red;");
+    }
+
+    @Override
+    public void stop() {
+        // Bỏ đăng ký observer khi đóng app
+        if (observer != null && itemService != null) {
+            itemService.removeObserver(observer);
+        }
     }
 
     public static void main(String[] args) {

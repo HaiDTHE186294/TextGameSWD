@@ -2,6 +2,7 @@ package item.service;
 
 import item.model.Item;
 import item.model.Inventory;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,9 +12,26 @@ import java.util.ArrayList;
 import item.service.ItemLoader;
 
 
+
 public class ItemService {
     private Map<String, Item> items;
     private Map<String, Inventory> inventories;
+    private final java.util.List<InventoryObserver> observers = new CopyOnWriteArrayList<>();
+
+    // Observer methods
+    public void addObserver(InventoryObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(InventoryObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyInventoryChanged(String ownerId) {
+        for (InventoryObserver observer : observers) {
+            observer.onInventoryChanged(ownerId);
+        }
+    }
 
     public ItemService() {
         this.items = new HashMap<>();
@@ -47,7 +65,7 @@ public class ItemService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        notifyInventoryChanged(ownerId); // thêm dòng này
         return true;
     }
 
@@ -62,6 +80,7 @@ public class ItemService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        notifyInventoryChanged(ownerId); // thêm dòng này
         return true;
     }
 
