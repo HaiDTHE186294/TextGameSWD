@@ -1,0 +1,65 @@
+{
+  "equipment": [
+    {
+      "id": "sword_1",
+      "name": "Iron Sword",
+      "description": "A basic iron sword.",
+      "value": 100,
+      "maxDurability": 100,
+      "slot": "WEAPON",
+      "attributes": {
+        "ATK": 10,
+        "DEF": 0
+      },
+      "image": "sword.png",
+      "color": "#CCCCCC"
+    },
+    {
+      "id": "shield_1",
+      "name": "Wooden Shield",
+      "description": "A basic wooden shield.",
+      "value": 60,
+      "maxDurability": 80,
+      "slot": "SHIELD",
+      "attributes": {
+        "ATK": 0,
+        "DEF": 8
+      },
+      "image": "shield.png"
+    }
+  ],
+  "consumables": [
+    {
+      "id": "potion_1",
+      "name": "Health Potion",
+      "description": "Restores health.",
+      "value": 20,
+      "maxQuantity": 10,
+      "attributes": {
+        "HP": 50
+      },
+      "image": "potion_health.png"
+    },
+    {
+      "id": "potion_2",
+      "name": "Mana Potion",
+      "description": "Restores mana.",
+      "value": 25,
+      "maxQuantity": 10,
+      "attributes": {
+        "MP": 30
+      },
+      "image": "potion_mana.png"
+    }
+  ],
+  "quest": [
+    {
+      "id": "key_1",
+      "name": "Dungeon Key",
+      "description": "A key for the dungeon.",
+      "value": 0,
+      "questId": "quest_1",
+      "image": "key.png"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "q1",
+    "name": "Thu thập táo",
+    "description": "Thu thập 10 quả táo.",
+    "type": "THU_THAP",
+    "target": "apple",
+    "requiredAmount": 10,
+    "reward": ["item_apple_pie", "item_gold"]
+  },
+  {
+    "id": "q2",
+    "name": "Săn sói",
+    "description": "Săn 5 con sói.",
+    "type": "SAN_LUNG",
+    "target": "wolf",
+    "requiredAmount": 5,
+    "reward": ["item_wolf_pelt"]
+  },
+  {
+    "id": "q3",
+    "name": "Nói chuyện với NPC trưởng làng",
+    "description": "Tìm và nói chuyện với trưởng làng.",
+    "type": "NOI_CHUYEN",
+    "target": "npc_village_head",
+    "requiredAmount": 1,
+    "reward": ["item_info_scroll"]
+  }
+]
