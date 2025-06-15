@@ -4,6 +4,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 logs/
+.mvn/
+.gradle/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -36,9 +38,24 @@ bin/
 /dist/
 /nbdist/
 /.nb-gradle/
+build/classes/
+build/web/
 
 ### VS Code ###
 .vscode/
 
 ### Mac OS ###
 .DS_Store
+
+### Exclude Lib and let Gradle hander install lib ###
+lib/
+libs/
+dependencies/
+
+### Just in case - Exclude General binary / archive / log files ###
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.log
