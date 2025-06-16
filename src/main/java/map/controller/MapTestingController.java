@@ -115,38 +115,6 @@ public class MapTestingController extends GameApplication implements IMapObserve
         notifyMapInitialized();
     }
 
-    @Override
-    protected void initInput() {
-        // Input is now handled by MapEventHandler through the observer pattern
-        // FXGL.getInput().addAction(new UserAction("Move Up") {
-        //     @Override
-        //     protected void onActionBegin() {
-        //         movePlayer(0, -1);
-        //     }
-        // }, KeyCode.W);
-        // 
-        // FXGL.getInput().addAction(new UserAction("Move Down") {
-        //     @Override
-        //     protected void onActionBegin() {
-        //         movePlayer(0, 1);
-        //     }
-        // }, KeyCode.S);
-        // 
-        // FXGL.getInput().addAction(new UserAction("Move Left") {
-        //     @Override
-        //     protected void onActionBegin() {
-        //         movePlayer(-1, 0);
-        //     }
-        // }, KeyCode.A);
-        // 
-        // FXGL.getInput().addAction(new UserAction("Move Right") {
-        //     @Override
-        //     protected void onActionBegin() {
-        //         movePlayer(1, 0);
-        //     }
-        // }, KeyCode.D);
-    }
-
     public void movePlayer(int dx, int dy) {
         Room currentRoom = gameMap.getArea(playerPosition.getAreaId())
                                 .getRoom(playerPosition.getRoomId());
@@ -368,14 +336,6 @@ public class MapTestingController extends GameApplication implements IMapObserve
     @Override
     public void onMovementRequested(int dx, int dy) {
         movePlayer(dx, dy);
-    }
-
-    public GMap getGameMap() {
-        return gameMap;
-    }
-
-    public PlayerPosition getPlayerPosition() {
-        return playerPosition;
     }
 
     protected void onExit() {
