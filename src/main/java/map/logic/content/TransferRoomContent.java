@@ -1,6 +1,5 @@
 package map.logic.content;
 
-import map.logic.content.CellContent;
 import map.logic.PlayerPosition;
 
 public class TransferRoomContent implements CellContent {

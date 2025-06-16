@@ -1,17 +1,12 @@
 package map.ui;
 
-import javafx.scene.layout.GridPane;
 import map.observer.IUIObserver;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.geometry.Pos;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import java.util.ArrayList;
 import java.util.List;
 

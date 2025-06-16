@@ -2,7 +2,6 @@ package map.ui;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Line;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import javafx.geometry.Point2D;
@@ -15,7 +14,6 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
-import javafx.geometry.Insets;
 import map.observer.IUIObserver;
 import javafx.scene.layout.StackPane;
 

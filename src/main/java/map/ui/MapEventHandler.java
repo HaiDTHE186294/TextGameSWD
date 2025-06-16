@@ -6,8 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import java.util.List;
-import java.util.ArrayList;
-import map.observer.IUIObserver;
 
 public class MapEventHandler {
     private final StackPane root;
