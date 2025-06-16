@@ -1,17 +1,33 @@
 {
   "inventories" : {
-    "player_1" : {
+    "goblin_king_1" : {
       "maxSize" : 20,
+      "items" : { }
+    },
+    "warrior_hero" : {
+      "maxSize" : 40,
       "items" : {
-        "potion_1" : 8,
-        "key_1" : 1
+        "dragon_heart_1" : 1,
+        "potion_1" : 5,
+        "sword_1" : 2,
+        "potion_2" : 8,
+        "magic_robe_1" : 1,
+        "shield_1" : 1,
+        "legendary_sword_1" : 1,
+        "dragon_scales_1" : 1,
+        "crown_1" : 1,
+        "dark_staff_1" : 1,
+        "spell_book_1" : 1,
+        "royal_sword_1" : 1
       }
     },
-    "npc_1" : {
-      "maxSize" : 10,
-      "items" : {
-        "potion_1" : 3
-      }
+    "dragon_lord_1" : {
+      "maxSize" : 50,
+      "items" : { }
+    },
+    "dark_wizard_1" : {
+      "maxSize" : 40,
+      "items" : { }
     }
   }
 }
