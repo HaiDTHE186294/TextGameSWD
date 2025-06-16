@@ -115,33 +115,6 @@ public class MapTestingController extends GameApplication implements IMapObserve
         notifyMapInitialized();
     }
 
-    public void movePlayer(int dx, int dy) {
-        Room currentRoom = gameMap.getArea(playerPosition.getAreaId())
-                                .getRoom(playerPosition.getRoomId());
-        
-        Cell currentCell = playerPosition.getCell();
-        int newRow = currentCell.getRow() + dy;
-        int newCol = currentCell.getCol() + dx;
-        
-        if (newRow >= 0 && newRow < currentRoom.getRows() &&
-            newCol >= 0 && newCol < currentRoom.getCols()) {
-            
-            Cell newCell = currentRoom.getCell(newRow, newCol);
-            if (newCell.isWalkable()) {
-                playerPosition.moveTo(
-                    playerPosition.getAreaId(),
-                    playerPosition.getRoomId(),
-                    newCell
-                );
-                
-                // Check for content interaction
-                if (newCell.getContent() != null) {
-                    newCell.getContent().onEnter();
-                }
-            }
-        }
-    }
-
     // Observer methods
     public void addMapObserver(IMapObserver observer) {
         mapObservers.add(observer);
@@ -335,7 +308,7 @@ public class MapTestingController extends GameApplication implements IMapObserve
 
     @Override
     public void onMovementRequested(int dx, int dy) {
-        movePlayer(dx, dy);
+        playerPosition.handleMovement(dx, dy);
     }
 
     protected void onExit() {
