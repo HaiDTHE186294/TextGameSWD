@@ -8,16 +8,21 @@ import map.logic.content.*;
 import map.observer.*;
 import map.ui.*;
 import javafx.geometry.Point2D;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import map.jsonloader.JSONMapLoad;
 
 public class MapTestingController extends GameApplication implements IMapObserver, IUIObserver {
-    private final GMap gameMap;
+    private GMap gameMap;
     private final List<IMapObserver> mapObservers;
     private final List<IUIObserver> uiObservers;
     private PlayerPosition playerPosition;
     private MapUI mapUI;
     private AreaUI currentAreaUI;
+
+    String mapPath = "/maps/testmap.json";
 
     public MapTestingController() {
         this.gameMap = new GMap();
@@ -56,64 +61,27 @@ public class MapTestingController extends GameApplication implements IMapObserve
     }
 
     public void initializeTestMap() {
-        // Create a test area and room
-        Area testArea = new Area("TestArea", gameMap);
-        Room testRoom = new Room("room1", 10, 15); // 10 rows, 15 columns
-        
-        // Add some walls
-        for (int i = 0; i < 15; i++) {
-            testRoom.getCell(0, i).setWalkable(false);  // Top wall
-            testRoom.getCell(9, i).setWalkable(false);  // Bottom wall
+        try {
+            this.gameMap = JSONMapLoad.loadMapFromJSON(mapPath);
+            Area startArea = gameMap.getArea("TestArea");
+            Room startRoom = startArea.getRoom("room1");
+            Cell startCell = startRoom.getCell(1, 1);
+
+            playerPosition = new PlayerPosition("TestArea", "room1", startCell, gameMap);
+
+            for (IUIObserver observer : uiObservers) {
+                observer.onPlayerPositionChanged(new Point2D(startCell.getCol(), startCell.getRow()));
+            }
+
+            currentAreaUI.showRoom(startRoom);
+            notifyMapInitialized();
+
+        } catch (IOException e) {
+            System.err.println("Failed to load map from JSON: " + e.getMessage());
+            throw new RuntimeException(e);
         }
-        for (int i = 0; i < 10; i++) {
-            testRoom.getCell(i, 0).setWalkable(false);  // Left wall
-            testRoom.getCell(i, 14).setWalkable(false); // Right wall
-        }
-        
-        // Add an exit
-        Cell exitCell = testRoom.getCell(5, 13);
-        exitCell.setContent(new ExitAreaContent(gameMap));
-        
-        testArea.addRoom(testRoom);
-        gameMap.addArea(testArea);
-        
-        // Set a walkable spawn cell for TestArea
-        testArea.setSpawnCell(testRoom.getCell(1, 1));
-
-        // Add a second test area
-        Area areaTwo = new Area("AreaTwo", gameMap);
-        Room roomTwo = new Room("roomA", 8, 12);
-        areaTwo.addRoom(roomTwo);
-        gameMap.addArea(areaTwo);
-
-        // Add an exit to AreaTwo
-        Cell exitCellTwo = roomTwo.getCell(1, 1); // Assuming (1,1) is walkable
-        exitCellTwo.setContent(new ExitAreaContent(gameMap));
-
-        // Add a third test area
-        Area areaThree = new Area("AreaThree", gameMap);
-        Room roomThree = new Room("roomX", 7, 10);
-        areaThree.addRoom(roomThree);
-        gameMap.addArea(areaThree);
-
-        // Add an exit to AreaThree
-        Cell exitCellThree = roomThree.getCell(1, 1); // Assuming (1,1) is walkable
-        exitCellThree.setContent(new ExitAreaContent(gameMap));
-        
-        // Set initial player position
-        playerPosition = new PlayerPosition("TestArea", "room1", testRoom.getCell(1, 1), gameMap);
-        
-        // Notify UI about initial player position
-        for (IUIObserver observer : uiObservers) {
-            observer.onPlayerPositionChanged(new Point2D(playerPosition.getCell().getCol(), playerPosition.getCell().getRow()));
-        }
-        
-        // Show the initial room
-        currentAreaUI.showRoom(testRoom);
-        
-        // Notify observers
-        notifyMapInitialized();
     }
+
 
     // Observer methods
     public void addMapObserver(IMapObserver observer) {
@@ -215,25 +183,6 @@ public class MapTestingController extends GameApplication implements IMapObserve
         }
     }
 
-    @Override
-    public void onContentEntered(String areaId, String roomId, int row, int col, String contentType) {
-        if (contentType.equals("T")) {
-            onRoomTransitionRequested(areaId, roomId, row, col);
-        } else if (contentType.equals("E")) {
-            for (IUIObserver observer : uiObservers) {
-                observer.onUIStateChanged("SHOW_MAP");
-            }
-        }
-    }
-
-    @Override
-    public void onContentExited(String areaId, String roomId, int row, int col, String contentType) {
-        if (contentType.equals("E")) {
-            for (IUIObserver observer : uiObservers) {
-                observer.onUIStateChanged("HIDE_MAP");
-            }
-        }
-    }
 
     // IUIObserver implementation
     @Override
@@ -266,13 +215,6 @@ public class MapTestingController extends GameApplication implements IMapObserve
     @Override
     public void onRoomSelected(String areaId, String roomId) {
         onRoomTransitionRequested(areaId, roomId, 0, 0);
-    }
-
-    @Override
-    public void onCellClicked(int row, int col) {
-        if (currentAreaUI != null) {
-            currentAreaUI.handleCellClick(row, col);
-        }
     }
 
     @Override

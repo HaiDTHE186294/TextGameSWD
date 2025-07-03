@@ -40,7 +40,7 @@ public class CellUI {
         content.setText(elementType);
         
         if (elementType.equals("T")) {
-            content.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2196F3;"); // Blue for Transfer
+            content.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0087ff;"); // Blue for Transfer
         } else if (elementType.equals("E")) {
             content.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #F44336;"); // Red for Exit
         } else {

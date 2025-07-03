@@ -17,7 +17,4 @@ public interface IMapObserver {
     // Map state changes
     void onMapStateChanged(String areaId, String roomId, String state);
     
-    // Content interactions
-    void onContentEntered(String areaId, String roomId, int row, int col, String contentType);
-    void onContentExited(String areaId, String roomId, int row, int col, String contentType);
 } 

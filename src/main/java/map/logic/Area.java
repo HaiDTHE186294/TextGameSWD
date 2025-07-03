@@ -42,18 +42,6 @@ public class Area {
         return spawnCell;
     }
 
-    public String getSpawnRoomId() {
-        return spawnCell != null ? spawnCell.getRoom().getId() : null;
-    }
-
-    public int getSpawnRow() {
-        return spawnCell != null ? spawnCell.getRow() : 0;
-    }
-
-    public int getSpawnCol() {
-        return spawnCell != null ? spawnCell.getCol() : 0;
-    }
-
     public void onCellChanged(String roomId, int row, int col, boolean isWalkable, String content) {
         if (gameMap != null) {
             gameMap.notifyCellChanged(name, roomId, row, col, isWalkable, content);

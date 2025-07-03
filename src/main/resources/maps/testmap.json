@@ -1,0 +1,50 @@
+{
+  "areas": [
+    {
+      "name": "TestArea",
+      "spawn": {"room": "room1", "row": 1, "col": 1},
+      "rooms": [
+        {
+          "name": "room1",
+          "rows": 10,
+          "cols": 15,
+          "walls": {
+            "top": true,
+            "bottom": true,
+            "left": true,
+            "right": true
+          },
+          "exits": [
+            {"row": 5, "col": 13}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AreaTwo",
+      "rooms": [
+        {
+          "name": "roomA",
+          "rows": 8,
+          "cols": 12,
+          "exits": [
+            {"row": 1, "col": 1}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AreaThree",
+      "rooms": [
+        {
+          "name": "roomX",
+          "rows": 7,
+          "cols": 10,
+          "exits": [
+            {"row": 1, "col": 1}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -32,14 +32,6 @@ public class GMap {
         return areas.values();
     }
 
-    public boolean hasArea(String areaName) {
-        return areas.containsKey(areaName);
-    }
-
-    public void removeArea(String areaName) {
-        areas.remove(areaName);
-    }
-
     public void clear() {
         areas.clear();
     }

@@ -58,16 +58,16 @@ public class MapEventHandler {
         }
 
         switch (event.getCode()) {
-            case W:
+            case UP:
                 notifyMovement(0, -1);
                 break;
-            case S:
+            case DOWN:
                 notifyMovement(0, 1);
                 break;
-            case A:
+            case LEFT:
                 notifyMovement(-1, 0);
                 break;
-            case D:
+            case RIGHT:
                 notifyMovement(1, 0);
                 break;
         }
@@ -102,32 +102,9 @@ public class MapEventHandler {
         }
     }
 
-    public void populateRoomSelection(List<String> availableRooms) {
-        roomTransitionView.getChildren().clear();
-        for (String roomId : availableRooms) {
-            Button roomButton = new Button(roomId);
-            roomButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;");
-            roomButton.setOnAction(e -> notifyRoomSelected(selectedAreaId, roomId));
-            roomTransitionView.getChildren().add(roomButton);
-        }
-    }
 
     private void notifyAreaSelected(String areaId) {
         mapUI.onAreaSelected(areaId);
     }
 
-    private void notifyRoomSelected(String areaId, String roomId) {
-        mapUI.onRoomSelected(areaId, roomId);
-    }
-
-    public void handleUIStateChange(String state) {
-        switch (state) {
-            case "SHOW_MAP":
-                showAreaSelection();
-                break;
-            case "HIDE_MAP":
-                hideAreaSelection();
-                break;
-        }
-    }
 } 

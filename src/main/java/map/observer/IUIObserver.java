@@ -21,9 +21,6 @@ public interface IUIObserver {
     // Room selection
     void onRoomSelected(String areaId, String roomId);
     
-    // Cell interaction
-    void onCellClicked(int row, int col);
-    
     // UI state changes
     void onUIStateChanged(String state);
     

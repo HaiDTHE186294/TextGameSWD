@@ -114,8 +114,6 @@ public class MapUI implements IUIObserver {
         // System.out.println("MapUI: Player position changed to " + newPosition);
         if (currentAreaUI != null) {
             currentAreaUI.updatePlayerPosition(newPosition);
-            // root.getChildren().remove(currentAreaUI.getNode()); // Handled by show/hideAreaSelection
-            // root.getChildren().add(currentAreaUI.getNode());   // Handled by show/hideAreaSelection
         }
     }
 
@@ -137,13 +135,6 @@ public class MapUI implements IUIObserver {
     public void onRoomSelected(String areaId, String roomId) {
         if (currentAreaUI != null) {
             currentAreaUI.handleRoomSelection(roomId);
-        }
-    }
-
-    @Override
-    public void onCellClicked(int row, int col) {
-        if (currentAreaUI != null) {
-            currentAreaUI.handleCellClick(row, col);
         }
     }
 
